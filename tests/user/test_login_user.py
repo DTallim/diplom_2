@@ -3,6 +3,11 @@ import pytest
 import data as dt
 
 class TestLoginUser:
+    @pytest.fixture(autouse=True)
+    def setup_and_teardown(self, login_user_methods):
+        yield
+        # Удаление пользователя после каждого теста
+        login_user_methods.delete_user()
 
     @allure.title("Тест входа зарегистрированного пользователя с корректными данными")
     def test_login_user(self, login_user_methods):
