@@ -1,7 +1,7 @@
 import allure
 import pytest
 import data as dt
-import json
+from conftest import create_order_methods
 
 class TestCreateOrder:
 
@@ -32,10 +32,6 @@ class TestCreateOrder:
     def test_create_order_on_invalid_hash_ingredients(self, create_order_methods, header):
         create_order_methods.create_order(header, {'ingredients': dt.ingredients['not correct hash']})
         create_order_methods.check_status_code(500)
-        try:
-            response_body = create_order_methods.get_response_body
-            error_message = str(response_body)
-        except json.JSONDecodeError:
-            # Если ответ не является валидным JSON, получаем текст ответа напрямую
-            error_message = create_order_methods.response.text
-        assert 'Internal Server Error' in error_message, "Неверное сообщение об ошибке для некорректного хеша"
+        # Используем response.text вместо response_body, так как при 500 ошибке возвращается текст, а не JSON
+        response_text = create_order_methods.response.text
+        assert 'Internal Server Error' in response_text, "Неверное сообщение об ошибке для некорректного хеша"
